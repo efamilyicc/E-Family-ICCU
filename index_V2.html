@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SISAPA — Sistem Informasi Status Pemantauan Pasien ICCU</title>
+<style>
+:root {
+    --emerald-primary: #10b981;
+    --emerald-dark: #059669;
+    --emerald-deep: #064e3b;
+    --emerald-light: #ecfdf5;
+    --emerald-border: #a7f3d0;
+    --bg-main: #f0fdf4;
+    --card-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --card-blue-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    --card-orange-gradient: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+    --card-red-gradient: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --danger: #ef4444;
+}
+
+*{box-sizing:border-box}
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg-main);
+    color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+}
+
+button, input, textarea, select { font: inherit; }
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    background: var(--emerald-primary);
+    color: white;
+    font-weight: 600;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+button:hover {
+    background: var(--emerald-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+button.secondary {
+    background: var(--emerald-light);
+    color: var(--emerald-deep);
+    border: 1px solid var(--emerald-border);
+    box-shadow: none;
+}
+button.secondary:hover {
+    background: #d1fae5;
+    transform: translateY(-1px);
+}
+button.ghost {
+    background: transparent;
+    color: var(--emerald-deep);
+    border: 1px solid var(--emerald-border);
+    box-shadow: none;
+}
+button.ghost:hover {
+    background: var(--emerald-light);
+    border-color: var(--emerald-primary);
+}
+button.danger {
+    background: var(--danger);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+button.danger:hover {
+    background: #dc2626;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--emerald-border);
+    border-radius: 12px;
+    background: white;
+    color: var(--text-dark);
+    outline: none;
+    transition: all 0.2s ease;
+}
+input:focus, textarea:focus, select:focus {
+    border-color: var(--emerald-primary);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+}
+
+label {
+    font-size: 11.5px;
+    color: var(--emerald-deep);
+    font-weight: 700;
+    display: block;
+    margin: 16px 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+/* LOGIN STYLES */
+.login-wrap {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(145deg, #064e3b 0%, #022c22 100%);
+    padding: 20px;
+}
+.login-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.login-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+.login-header img {
+    width: 52px;
+    height: auto;
+    background: var(--emerald-light);
+    padding: 8px;
+    border-radius: 14px;
+}
+.login-header-text h1 {
+    color: var(--emerald-deep);
+    margin: 0 0 4px 0;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+.login-header-text p {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+}
+.login-card button.btn-login {
+    width: 100%;
+    margin-top: 28px;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    background: var(--card-gradient);
+    box-shadow: 0 8px 20px rgba(5, 150, 105, 0.35);
+}
+.hint {
+    background: var(--emerald-light);
+    border: 1px solid var(--emerald-border);
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 12.5px;
+    color: var(--emerald-deep);
+    line-height: 1.6;
+    margin-top: 24px;
+}
+.error {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 8px;
+    min-height: 16px;
+    font-weight: 600;
+}
+
+/* PASSWORD TOGGLE */
+.pwd-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.pwd-container input { padding-right: 48px; }
+button.pwd-toggle {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    padding: 8px;
+    width: auto;
+    border-radius: 50%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+}
+button.pwd-toggle:hover {
+    background: var(--emerald-light);
+    color: var(--emerald-primary);
+}
+
+/* APP LAYOUT */
+.app {
+    display: none;
+    padding-top: 84px;
+    padding-bottom: 96px;
+    min-height: 100vh;
+}
+.top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--emerald-deep);
+    backdrop-filter: blur(12px);
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+.top-navbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.top-navbar .brand img {
+    width: 42px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.top-navbar .brand-text h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+.top-navbar .brand-text p {
+    margin: 0;
+    font-size: 11.5px;
+    color: #a7f3d0;
+    font-weight: 500;
+}
+.btn-logout {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    padding: 9px 20px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: none;
+}
+.btn-logout:hover {
+    background: #ffffff;
+    color: var(--emerald-deep);
+}
+
+/* BOTTOM NAVIGATION & FAB */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--emerald-deep);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 76px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+.bottom-nav button {
+    background: transparent;
+    color: #a7f3d0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    width: 72px;
+    height: 100%;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: none;
+}
+.bottom-nav button i {
+    font-size: 20px;
+    font-style: normal;
+    margin-bottom: 2px;
+}
+.bottom-nav button.active {
+    color: #ffffff;
+}
+.bottom-nav button.active i { transform: scale(1.15); }
+.bottom-nav button.fab {
+    position: relative;
+    top: -22px;
+    background: var(--card-gradient);
+    color: white;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: 4px solid var(--emerald-deep);
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.4);
+    flex: none;
+    margin: 0;
+}
+.bottom-nav button.fab:hover {
+    transform: scale(1.08) translateY(-2px);
+}
+.bottom-nav button.fab i {
+    font-size: 28px;
+    color: white;
+    margin: 0;
+}
+.bottom-nav button.fab span { display: none; }
+
+.content {
+    padding: 28px;
+    max-width: 920px;
+    margin: auto;
+}
+
+/* DASHBOARD COMPONENTS */
+.welcome-banner {
+    background: var(--card-gradient);
+    color: white;
+    border-radius: 24px;
+    padding: 32px;
+    position: relative;
+    margin-bottom: 28px;
+    box-shadow: 0 15px 35px rgba(5, 150, 105, 0.25);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.welcome-banner .icon-user {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.welcome-banner h4 {
+    margin: 0 0 6px 0;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    opacity: 0.85;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.welcome-banner h2 {
+    margin: 0 0 8px 0;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+.welcome-banner p {
+    margin: 0 0 16px 0;
+    font-size: 13.5px;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+.sync-badge {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 7px 16px;
+    border-radius: 24px;
+    font-size: 11.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.sync-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #34d399;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 10px #34d399;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.stat-card-blue {
+    background: var(--card-blue-gradient);
+    color: white;
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.25);
+    transition: 0.25s ease;
+}
+.stat-card-blue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+}
+.stat-card-blue h2 {
+    color: white;
+    margin: 0 0 6px;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+.stat-card-blue p {
+    margin: 0;
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.stat-card-orange {
+    background: var(--card-orange-gradient);
+    color: white;
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.25);
+    transition: 0.25s ease;
+}
+.stat-card-orange:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(249, 115, 22, 0.35);
+}
+.stat-card-orange h2 {
+    color: white;
+    margin: 0 0 6px;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+.stat-card-orange p {
+    margin: 0;
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.stat-card-red {
+    background: var(--card-red-gradient);
+    color: white;
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.25);
+    transition: 0.25s ease;
+}
+.stat-card-red:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.35);
+}
+.stat-card-red h2 {
+    color: white;
+    margin: 0 0 6px;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+.stat-card-red p {
+    margin: 0;
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.action-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+.action-card {
+    background: white;
+    color: var(--text-dark);
+    padding: 22px 28px;
+    border-radius: 20px;
+    border: 1px solid var(--emerald-border);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+.action-card:hover {
+    border-color: var(--emerald-primary);
+    box-shadow: 0 10px 30px rgba(5, 150, 105, 0.1);
+    transform: translateY(-2px);
+    background: var(--emerald-light);
+}
+.action-card h3 {
+    margin: 0 0 4px 0;
+    font-size: 17px;
+    color: var(--emerald-deep);
+    font-weight: 700;
+}
+.action-card p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+.action-icon-circle {
+    width: 48px;
+    height: 48px;
+    background: var(--emerald-light);
+    color: var(--emerald-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    flex-shrink: 0;
+    transition: 0.25s ease;
+    border: 1px solid var(--emerald-border);
+}
+.action-card:hover .action-icon-circle {
+    background: var(--emerald-primary);
+    color: white;
+}
+
+.recent-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid var(--emerald-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+.recent-card h3 {
+    margin: 0 0 20px 0;
+    font-size: 17px;
+    color: var(--emerald-deep);
+    font-weight: 700;
+}
+.patient-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--emerald-border);
+}
+.patient-row:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.patient-row h4 { margin: 0 0 4px 0; font-size: 15.5px; color: var(--text-dark); font-weight: 700; }
+.patient-row p { margin: 0; font-size: 12.5px; color: var(--text-muted); }
+.btn-buka {
+    background: var(--emerald-light);
+    color: var(--emerald-dark);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 9px 22px;
+    border-radius: 24px;
+    border: 1px solid var(--emerald-border);
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: none;
+}
+.btn-buka:hover {
+    background: var(--emerald-primary);
+    color: white;
+}
+.sync-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--emerald-border);
+    font-weight: 500;
+}
+
+/* FORM STYLES */
+.form-banner-top {
+    background: var(--card-gradient);
+    color: white;
+    border-radius: 20px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 8px 25px rgba(5, 150, 105, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.form-banner-top small {
+    font-size: 10.5px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+.form-banner-top h2 { margin: 0; font-size: 22px; font-weight: 800; }
+.badge-data-baru {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 7px 16px;
+    border-radius: 24px;
+    font-size: 11.5px;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+}
+
+.form-card-section {
+    background: white;
+    border-radius: 20px;
+    padding: 26px;
+    border: 1px solid var(--emerald-border);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+.form-card-section h3.section-title {
+    margin: 0 0 18px 0;
+    font-size: 16px;
+    color: var(--emerald-deep);
+    font-weight: 700;
+}
+
+.section-row-action { display: flex; justify-content: space-between; align-items: center; }
+.section-row-action .desc-text h3.section-title { margin-bottom: 4px; }
+.section-row-action .desc-text p { margin: 0; font-size: 13px; color: var(--text-muted); }
+.btn-tambah-data {
+    background: var(--emerald-light);
+    color: var(--emerald-dark);
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 24px;
+    border: 1px solid var(--emerald-border);
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: none;
+}
+.btn-tambah-data:hover {
+    background: var(--emerald-primary);
+    color: white;
+}
+
+/* EDUKASI STYLES (ASPECT RATIO 1920x1080 / 16:9 CONTAINER & FLUID FIT) */
+.edu-wrapper {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    border: 1px solid var(--emerald-border);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.03);
+}
+.edu-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.edu-header-row h2 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--emerald-deep);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+.edu-grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.edu-card-grid {
+    background: var(--emerald-light);
+    border: 1px solid var(--emerald-border);
+    border-radius: 18px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    transition: 0.2s ease;
+    overflow: hidden;
+    width: 100%;
+}
+.edu-card-grid:hover {
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.1);
+    transform: translateY(-2px);
+}
+.edu-card-grid h3 { color: var(--emerald-primary); font-size: 17px; margin: 0 0 10px 0; font-weight: 700; }
+.edu-card-grid p { margin: 0 0 14px 0; font-size: 13.5px; color: #334155; line-height: 1.6; }
+
+.edu-img-container {
+    width: 100%;
+    aspect-ratio: 1920 / 1080;
+    background: #ffffff;
+    border: 1px solid var(--emerald-border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.edu-card-grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.edu-card-grid h4 { color: var(--emerald-deep); font-size: 14px; margin: 14px 0 8px 0; font-weight: 700; }
+.edu-card-grid ol { padding-left: 18px; margin: 0; font-size: 13.5px; color: #334155; line-height: 1.6; }
+.edu-card-grid li { margin-bottom: 6px; }
+
+/* Legacy & UI helpers */
+.panel {
+    background: white;
+    border: 1px solid var(--emerald-border);
+    border-radius: 20px;
+    padding: 28px;
+    margin-top: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; }
+.full { grid-column: 1/-1; }
+.actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th {
+    background: var(--emerald-light);
+    color: var(--emerald-deep);
+    padding: 16px 14px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--emerald-border);
+    text-align: left;
+}
+.table td {
+    text-align: left;
+    padding: 16px 14px;
+    border-bottom: 1px solid var(--emerald-border);
+    vertical-align: middle;
+    color: var(--text-dark);
+}
+.empty { padding: 36px; text-align: center; color: var(--text-muted); font-size: 14px; }
+
+/* Chat Styles with Swipe-to-Reply */
+.chat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 440px;
+    overflow-y: auto;
+    padding: 24px;
+    background: var(--emerald-light);
+    border-radius: 16px;
+    border: 1px solid var(--emerald-border);
+    margin-bottom: 14px;
+}
+.chat-row { display: flex; width: 100%; margin-bottom: 8px; position: relative; }
+.row-out { justify-content: flex-end; }
+.row-in { justify-content: flex-start; }
+
+.msg {
+    max-width: 80%;
+    padding: 14px 18px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.55;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    transition: transform 0.15s ease-out;
+    user-select: none;
+    position: relative;
+}
+.msg:active { filter: brightness(0.97); }
+.msg-out {
+    background: var(--card-gradient);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+.msg-in {
+    background: white;
+    color: var(--text-dark);
+    border: 1px solid var(--emerald-border);
+    border-bottom-left-radius: 4px;
+}
+.msg-name { font-size: 12px; font-weight: 700; margin-bottom: 6px; opacity: 0.9; color: var(--emerald-deep); }
+.msg-out .msg-name { color: #a7f3d0; }
+.msg-time { font-size: 11px; text-align: right; margin-top: 6px; opacity: 0.75; }
+
+/* Quote Box inside Message */
+.quoted-box {
+    background: rgba(0, 0, 0, 0.05);
+    border-left: 3px solid var(--emerald-primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    margin-bottom: 8px;
+    opacity: 0.95;
+}
+.msg-out .quoted-box { background: rgba(255, 255, 255, 0.2); border-left-color: white; }
+
+/* Reply Preview Floating Bar above input */
+.reply-preview-bar {
+    background: var(--emerald-light);
+    border: 1px solid var(--emerald-border);
+    border-left: 4px solid var(--emerald-primary);
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+}
+.reply-preview-bar .content-preview { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-muted); }
+.reply-preview-bar .close-reply { background: transparent; color: var(--text-muted); border: none; font-size: 20px; cursor: pointer; padding: 0 4px; box-shadow: none; }
+
+.reply-box { display: flex; gap: 10px; align-items: center; flex-direction: column; }
+.reply-input-row { display: flex; width: 100%; gap: 12px; align-items: center; }
+.reply-input-row input { flex: 1; padding: 14px 20px; border-radius: 28px; }
+.reply-input-row button {
+    border-radius: 28px;
+    padding: 13px 26px;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.25);
+    background: var(--card-gradient);
+}
+
+.chat-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border: 1px solid var(--emerald-border);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+    transition: 0.25s ease;
+    cursor: pointer;
+}
+.chat-list-item:hover {
+    border-color: var(--emerald-primary);
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.1);
+    transform: translateY(-1px);
+    background: var(--emerald-light);
+}
+.badge-unread {
+    background: var(--danger);
+    color: white;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+@media(max-width: 560px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .content { padding: 16px; }
+    .stats-row { gap: 14px; }
+}
+</style>
+</head>
+<body>
+
+<section id="loginView" class="login-wrap">
+ <div class="login-card">
+    <div class="login-header">
+        <img src="image.png" alt="Logo RSD Mangusada">
+        <div class="login-header-text">
+            <h1>SISAPA</h1>
+            <p>Sistem Informasi Status Pemantauan Pasien</p>
+        </div>
+    </div>
+    
+  <label>Masuk sebagai</label>
+  <select id="role">
+      <option value="nurse">Perawat</option>
+      <option value="family">Keluarga pasien</option>
+  </select>
+  
+  <label id="passwordLabel">Password / Kode Unik Pasien</label>
+  <div class="pwd-container">
+      <input id="password" type="password" placeholder="Masukkan password">
+      <button type="button" class="pwd-toggle" onclick="togglePassword()" id="pwdIcon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      </button>
+  </div>
+  
+  <button class="btn-login" onclick="login()">Masuk</button>
+  <div id="loginError" class="error"></div>
+  <div class="hint"><b>Akun demo untuk mencoba:</b><br>Perawat: <b>perawat123</b><br>Keluarga: Masukkan Kode Unik Pasien terdaftar (Contoh: <b>123456</b>)</div>
+ </div>
+</section>
+
+<div id="app" class="app">
+ <header class="top-navbar">
+    <div class="brand">
+        <img src="image.png" alt="Logo">
+        <div class="brand-text">
+            <h1>SISAPA</h1>
+            <p id="topSubtitle">Dashboard Perawat • ICCU RSD Mangusada</p>
+        </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Keluar</button>
+ </header>
+
+ <main id="content" class="content"></main>
+ <nav id="bottomNav" class="bottom-nav"></nav>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const defaultDB = [
+    {
+        id: 1, 
+        name: "MADE RAI", 
+        mr: "123456", 
+        room: "Bed 2", 
+        diagnosis: "Pasien dalam pemantauan", 
+        condition: "Stabil",
+        nutrisi: [{ket: "Diet cair sonde 6x150cc", tanggal: "2026-06-06", jam: "08:00"}],
+        hygiene: [{ket: "Lap spong bath pagi", tanggal: "2026-06-06", jam: "08:30"}],
+        tindakan: [{ket: "Pemberian obat injeksi via IV", tanggal: "2026-06-06", jam: "09:00"}],
+        monitoring: [{ket: "Tensi 120/80 mmHg, Nadi 80x/mnt", tanggal: "2026-06-06", jam: "09:15"}],
+        aktivitas: [{ket: "Bedrest total", tanggal: "2026-06-06", jam: "10:00"}],
+        catatan: [{ket: "Pasien istirahat tenang", tanggal: "2026-06-06", jam: "10:30"}]
+    },
+    {
+        id: 2, 
+        name: "I Made", 
+        mr: "654321", 
+        room: "Bed 1", 
+        diagnosis: "Pemantauan", 
+        condition: "Lainnya",
+        conditionOther: "Observasi intensif lanjutan",
+        nutrisi: [{ket: "Makanan lunak bubur", tanggal: "2026-06-06", jam: "07:30"}],
+        hygiene: [{ket: "Oral hygiene", tanggal: "2026-06-06", jam: "08:00"}],
+        tindakan: [{ket: "Observasi ketat kesadaran", tanggal: "2026-06-06", jam: "08:30"}],
+        monitoring: [{ket: "Saturasi oksigen 98%", tanggal: "2026-06-06", jam: "09:00"}],
+        aktivitas: [{ket: "Mobilisasi mika-miki", tanggal: "2026-06-06", jam: "10:00"}],
+        catatan: [{ket: "Keluarga mendampingi", tanggal: "2026-06-06", jam: "11:00"}]
+    }
+];
+
+const defaultEducationData = [
+    {
+        id: 1,
+        title: "Mengenal Ruang ICCU",
+        content: "ICCU merupakan ruang perawatan intensif untuk pasien dengan gangguan jantung atau kondisi yang memerlukan pemantauan ketat.",
+        image: "",
+        subtitle: "",
+        items: []
+    },
+    {
+        id: 2,
+        title: "Alat Pemantauan",
+        content: "Monitor membantu petugas mengamati tanda-tanda vital pasien. Bunyi alarm ditangani petugas; keluarga tidak perlu mengubah pengaturan alat.",
+        image: "",
+        subtitle: "",
+        items: []
+    },
+    {
+        id: 3,
+        title: "Dukungan Keluarga",
+        content: "Berikan dukungan emosional, ikuti arahan petugas, dan sampaikan informasi yang relevan mengenai kondisi pasien.",
+        image: "",
+        subtitle: "",
+        items: []
+    },
+    {
+        id: 4,
+        title: "Komunikasi dengan Perawat",
+        content: "Gunakan fitur chat untuk klarifikasi. Untuk keadaan darurat, segera panggil petugas secara langsung.",
+        image: "",
+        subtitle: "",
+        items: []
+    },
+    {
+        id: 5,
+        title: "Hak-Hak Pasien",
+        content: "",
+        image: "",
+        subtitle: "Pasal 4 ayat (1) UU RI Nomor 17 Tahun 2023 tentang Kesehatan",
+        items: [
+            "Hidup sehat secara fisik, jiwa, dan sosial.",
+            "Mendapatkan informasi dan edukasi tentang kesehatan yang seimbang dan bertanggung jawab.",
+            "Mendapatkan pelayanan kesehatan yang aman, bermutu, dan terjangkau.",
+            "Mendapatkan perawatan kesehatan sesuai standar pelayanan kesehatan.",
+            "Mendapatkan akses atas sumber daya kesehatan.",
+            "Menentukan sendiri pelayanan kesehatan yang diperlukan secara mandiri dan bertanggung jawab.",
+            "Mendapatkan lingkungan yang sehat.",
+            "Menerima atau menolak sebagian atau seluruh tindakan pertolongan setelah menerima dan memahami informasi secara lengkap.",
+            "Memperoleh kerahasiaan data dan informasi kesehatan pribadi.",
+            "Memperoleh informasi tentang data kesehatan dirinya, termasuk tindakan dan pengobatan yang telah atau akan diterima.",
+            "Mendapatkan pelindungan dari risiko kesehatan."
+        ]
+    },
+    {
+        id: 6,
+        title: "Kewajiban Pasien",
+        content: "",
+        image: "",
+        subtitle: "Pasal 5 ayat (1) UU RI Nomor 17 Tahun 2023 tentang Kesehatan",
+        items: [
+            "Mewujudkan, mempertahankan, dan meningkatkan derajat kesehatan masyarakat setinggi-tingginya.",
+            "Menjaga dan meningkatkan derajat kesehatan orang lain yang menjadi tanggung jawabnya.",
+            "Menghormati hak orang lain dalam upaya memperoleh lingkungan yang sehat.",
+            "Menerapkan perilaku hidup sehat dan menghormati hak kesehatan orang lain.",
+            "Mematuhi kegiatan penanggulangan KLB atau wabah.",
+            "Mengikuti program jaminan kesehatan dalam sistem jaminan sosial nasional."
+        ]
+    }
+];
+
+let patientDB = JSON.parse(localStorage.getItem('iccu_patients')) || defaultDB;
+let deletedPatientDB = JSON.parse(localStorage.getItem('iccu_deleted_patients')) || [];
+let questions = JSON.parse(localStorage.getItem('iccu_questions')) || [];
+let educationDB = JSON.parse(localStorage.getItem('iccu_education')) || defaultEducationData;
+
+let role = "nurse", page = "Beranda";
+let currentPatient = patientDB[0]; 
+let familySavedPatient = JSON.parse(localStorage.getItem('iccu_family_saved')) || null; 
+let selectedChatMR = null; 
+let isNewPatient = false; 
+let isEditingEducation = false;
+let chatRefreshTimer = null;
+let lastChatCount = "";
+let replyingTo = null;
+let currentSearchQuery = "";
+let chatSearchQuery = "";
+
+const eyeOpen = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+const eyeClosed = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+
+const nurseNav = [
+    ["Beranda", "⌂", "Beranda"], 
+    ["Daftar Pasien", "▣", "Pasien"], 
+    ["Pasien Baru", "+", "Tambah"], 
+    ["Tanya Keluarga", "☏", "Tanya"], 
+    ["Edukasi", "ⓘ", "Edukasi"]
+];
+const familyNav = [
+    ["Beranda", "⌂", "Beranda"], 
+    ["Tanya Perawat", "☏", "Tanya"], 
+    ["Edukasi", "ⓘ", "Edukasi"]
+]; 
+
+function togglePassword() {
+    let pwd = document.getElementById('password');
+    let iconBtn = document.getElementById('pwdIcon');
+    if (pwd.type === "password") { pwd.type = "text"; iconBtn.innerHTML = eyeClosed; } 
+    else { pwd.type = "password"; iconBtn.innerHTML = eyeOpen; }
+}
+
+function login(){
+    const r = document.getElementById('role').value;
+    const p = document.getElementById('password').value.trim();
+    
+    if(r === "nurse") {
+        if(p !== "perawat123") {
+            document.getElementById('loginError').textContent = "Password perawat salah."; 
+            return;
+        }
+        role = "nurse";
+        selectedChatMR = null; 
+        document.getElementById('topSubtitle').textContent = "Dashboard Perawat • ICCU RSD Mangusada";
+    } else {
+        let matchedPatient = null;
+        if(p === "keluarga123") {
+            matchedPatient = patientDB[0];
+        } else {
+            matchedPatient = patientDB.find(pt => pt.mr === p);
+        }
+
+        if(!matchedPatient) {
+            document.getElementById('loginError').textContent = "Kode Unik Pasien tidak ditemukan."; 
+            return;
+        }
+
+        role = "family";
+        familySavedPatient = matchedPatient;
+        localStorage.setItem('iccu_family_saved', JSON.stringify(familySavedPatient));
+        document.getElementById('topSubtitle').textContent = `Dashboard Keluarga (${familySavedPatient.name}) • ICCU RSD Mangusada`;
+    }
+
+    document.getElementById('loginView').style.display = "none";
+    document.getElementById('app').style.display = "block";
+    showPage("Beranda");
+}
+
+function logout(){
+    document.getElementById('app').style.display="none";
+    document.getElementById('loginView').style.display="flex";
+    document.getElementById('password').value="";
+    document.getElementById('loginError').textContent="";
+    clearInterval(chatRefreshTimer);
+    if(role==="family") { familySavedPatient = null; localStorage.removeItem('iccu_family_saved'); }
+}
+
+function renderNav(){
+    const items = role==="nurse" ? nurseNav : familyNav;
+    document.getElementById('bottomNav').innerHTML = items.map(([n, icon, label]) => {
+        let isActive = (page === n) || (page === "Update Pasien" && n === "Pasien Baru" && isNewPatient) || (page === "Update Pasien" && n === "Daftar Pasien" && !isNewPatient);
+        let action = n === "Pasien Baru" ? "createNewPatient()" : `showPage('${n}')`;
+        let isFab = n === "Pasien Baru" ? "fab" : "";
+        
+        let unreadBadge = "";
+        if(n === "Tanya Keluarga" || n === "Tanya Perawat") {
+            let unreadCount = 0;
+            if(role === "nurse") {
+                unreadCount = questions.filter(q => !q.readByNurse).length;
+            } else if(familySavedPatient) {
+                unreadCount = questions.filter(q => q.mr === familySavedPatient.mr && !q.readByFamily).length;
+            }
+            if(unreadCount > 0) {
+                unreadBadge = `<span style="position:absolute; top:2px; right:8px; background:var(--danger); color:white; font-size:9px; font-weight:700; padding:1px 5px; border-radius:10px;">${unreadCount}</span>`;
+            }
+        }
+
+        return `<button class="${isActive ? 'active' : ''} ${isFab}" onclick="${action}" style="position:relative;">
+            <i>${icon}</i>
+            <span>${label}</span>
+            ${unreadBadge}
+        </button>`;
+    }).join("");
+}
+
+function showPage(p){
+    page = p;
+    renderNav();
+    clearInterval(chatRefreshTimer);
+    replyingTo = null;
+    const c = document.getElementById('content');
+    
+    if(p==="Beranda") c.innerHTML = role==="nurse" ? nurseHome() : familyHome();
+    else if(p==="Update Pasien" && role==="nurse") c.innerHTML = updateForm();
+    else if(p==="Daftar Pasien") c.innerHTML = patientList();
+    else if(p==="Tanya Perawat"||p==="Tanya Keluarga") {
+        c.innerHTML = chatPage();
+        if(role === "family" && familySavedPatient) {
+            questions.forEach(q => { if(q.mr === familySavedPatient.mr) q.readByFamily = true; });
+            localStorage.setItem('iccu_questions', JSON.stringify(questions));
+            renderNav();
+        }
+        setTimeout(scrollToBottom, 50);
+    }
+    else if(p==="Edukasi") c.innerHTML = educationPage();
+}
+
+function startChatSync() {
+    clearInterval(chatRefreshTimer);
+    lastChatCount = JSON.stringify(questions); 
+    chatRefreshTimer = setInterval(() => {
+        let freshQuestions = JSON.parse(localStorage.getItem('iccu_questions')) || [];
+        if (JSON.stringify(freshQuestions) !== lastChatCount) {
+            let active = document.activeElement;
+            if (active && active.tagName === 'INPUT' && active.type === 'text') return; 
+            
+            questions = freshQuestions;
+            lastChatCount = JSON.stringify(questions);
+            updateChatBoxUI();
+            renderNav();
+        }
+    }, 500);
+}
+
+function updateChatBoxUI() {
+    if(role === 'family') {
+        let cb = document.getElementById('chatBox');
+        if(cb && familySavedPatient) { cb.innerHTML = renderFamilyChatList(); scrollToBottom(); }
+    } else if(role === 'nurse') {
+        if(selectedChatMR === null) {
+            let cl = document.getElementById('chatListPanel');
+            if(cl) cl.innerHTML = renderNurseChatList();
+        } else {
+            let cb = document.getElementById('chatBox');
+            if(cb) { cb.innerHTML = renderNurseSpecificChat(); scrollToBottom(); }
+        }
+    }
+}
+
+function nurseHome(){
+    let unreadTotal = questions.filter(q => !q.readByNurse).length;
+    let syncTime = new Date().toLocaleString("id-ID") + " WITA";
+    let recentHTML = patientDB.slice(0, 3).map(p => `
+        <div class="patient-row">
+            <div><h4>${p.name}</h4><p>${p.room} • ${p.condition === 'Lainnya' && p.conditionOther ? p.conditionOther : p.condition}</p></div>
+            <button class="btn-buka" onclick="openPatient(${p.id})">Buka</button>
+        </div>
+    `).join("");
+
+    return `
+    <div class="welcome-banner">
+        <div class="sync-badge">Sinkronisasi aktif</div>
+        <div class="icon-user">👤</div>
+        <h4>RSD MANGUSADA • ICCU</h4>
+        <h2>Selamat datang di SISAPA</h2>
+        <p>Pemantauan pasien dan komunikasi keluarga dalam satu dashboard.</p>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card-blue"><h2>${patientDB.length}</h2><p>Pasien Aktif</p></div>
+        <div class="stat-card-red"><h2>${unreadTotal}</h2><p>Pesan Belum Dibaca</p></div>
+    </div>
+
+    <div class="action-grid">
+        <div class="action-card" onclick="createNewPatient()">
+            <div>
+                <h3>Pasien Baru</h3>
+                <p>Tambah dan perbarui data</p>
+            </div>
+            <div class="action-icon-circle">+</div>
+        </div>
+        <div class="action-card" onclick="showPage('Daftar Pasien')">
+            <div>
+                <h3>Daftar Pasien</h3>
+                <p>Buka pasien aktif & riwayat</p>
+            </div>
+            <div class="action-icon-circle">☰</div>
+        </div>
+        <div class="action-card" onclick="showPage('Tanya Keluarga')">
+            <div>
+                <h3>Tanya Keluarga</h3>
+                <p>Balas pesan keluarga</p>
+            </div>
+            <div class="action-icon-circle">✉</div>
+        </div>
+        <div class="action-card" onclick="showPage('Edukasi')">
+            <div>
+                <h3>Edukasi</h3>
+                <p>Informasi ICCU & hak pasien</p>
+            </div>
+            <div class="action-icon-circle">ⓘ</div>
+        </div>
+    </div>
+
+    <div class="recent-card">
+        <h3>Pasien Terbaru</h3>
+        ${recentHTML || '<p style="font-size:13px; color:#888;">Belum ada data pasien.</p>'}
+        <div class="sync-time">Sinkronisasi: ${syncTime}</div>
+    </div>`;
+}
+
+function familyHome(){ 
+    if(familySavedPatient && familySavedPatient.mr) {
+        let latest = patientDB.find(p => p.mr === familySavedPatient.mr);
+        if(latest) familySavedPatient = latest;
+    }
+    let p = familySavedPatient || {};
+    let displayCondition = p.condition === 'Lainnya' && p.conditionOther ? p.conditionOther : (p.condition || 'Stabil');
+
+    function renderResultList(arr) {
+        if(!arr || arr.length === 0 || (arr.length === 1 && !arr[0].ket)) return '<p style="font-size:13px; color:var(--text-muted); margin:0;">Belum ada catatan.</p>';
+        return arr.map(item => `
+            <div style="font-size:13.5px; padding:12px 0; border-bottom:1px solid var(--emerald-border); display:flex; flex-direction:column; gap:8px; align-items:flex-start;">
+                <span style="color:var(--text-dark); word-break:break-word; width:100%; line-height:1.5;">${esc(item.ket || '-')}</span>
+                <span style="font-size:11px; color:var(--emerald-dark); background:var(--emerald-light); padding:4px 10px; border-radius:6px; font-weight:600; border:1px solid var(--emerald-border); align-self:flex-end;">${esc(item.tanggal || '-')} ${item.jam ? '• ' + esc(item.jam) : ''}</span>
+            </div>
+        `).join("");
+    }
+
+    return `
+    <div class="welcome-banner">
+        <div class="sync-badge">Terhubung</div>
+        <div class="icon-user">♥</div>
+        <h4>RSD MANGUSADA • PEMANTAUAN KELUARGA</h4>
+        <h2>${p.name || 'Pasien'}</h2>
+        <p>No. Bed: ${p.room || '-'} • Diagnosis: ${p.diagnosis || 'Dalam Pemantauan'}</p>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card-blue"><h2>${displayCondition}</h2><p>Kondisi Saat Ini</p></div>
+        <div class="stat-card-orange"><h2>${p.mr || '-'}</h2><p>Kode Unik Pasien</p></div>
+    </div>
+    
+    <div class="panel" style="margin-top:0; margin-bottom:24px;">
+        <h3 style="margin-bottom:20px; color:var(--emerald-deep); font-size:17px;">Hasil Pemantauan & Perawatan Medis</h3>
+        
+        <div style="display:flex; flex-direction:column; gap: 16px;">
+            <div class="form-card-section" style="margin-bottom:0; padding:20px;">
+                <h4 style="margin:0 0 12px 0; font-size:14px; color:var(--emerald-primary);">Nutrisi</h4>
+                ${renderResultList(p.nutrisi)}
+            </div>
+
+            <div class="form-card-section" style="margin-bottom:0; padding:20px;">
+                <h4 style="margin:0 0 12px 0; font-size:14px; color:var(--emerald-primary);">Personal Hygiene</h4>
+                ${renderResultList(p.hygiene)}
+            </div>
+
+            <div class="form-card-section" style="margin-bottom:0; padding:20px;">
+                <h4 style="margin:0 0 12px 0; font-size:14px; color:var(--emerald-primary);">Tindakan Keperawatan</h4>
+                ${renderResultList(p.tindakan)}
+            </div>
+
+            <div class="form-card-section" style="margin-bottom:0; padding:20px;">
+                <h4 style="margin:0 0 12px 0; font-size:14px; color:var(--emerald-primary);">Monitoring</h4>
+                ${renderResultList(p.monitoring)}
+            </div>
+
+            <div class="form-card-section" style="margin-bottom:0; padding:20px;">
+                <h4 style="margin:0 0 12px 0; font-size:14px; color:var(--emerald-primary);">Aktivitas</h4>
+                ${renderResultList(p.aktivitas)}
+            </div>
+
+            <div class="form-card-section" style="margin-bottom:0; padding:20px;">
+                <h4 style="margin:0 0 12px 0; font-size:14px; color:var(--emerald-primary);">Catatan Tambahan</h4>
+                ${renderResultList(p.catatan)}
+            </div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+        <div class="action-card" onclick="showPage('Tanya Perawat')" style="margin:0;">
+            <div>
+                <h3>Tanya Perawat</h3>
+                <p>Kirim pesan & komunikasi</p>
+            </div>
+            <div class="action-icon-circle" style="font-size:16px;">☏</div>
+        </div>
+        <div class="action-card" onclick="showPage('Edukasi')" style="margin:0;">
+            <div>
+                <h3>Edukasi</h3>
+                <p>Informasi ICCU & hak</p>
+            </div>
+            <div class="action-icon-circle" style="font-size:16px;">ⓘ</div>
+        </div>
+    </div>
+
+    <div class="panel" style="margin-top:0;">
+        <h3 style="margin-bottom:10px; font-size:16px; color:var(--emerald-deep);">Informasi Perawatan</h3>
+        <p style="font-size:13.5px; color:var(--text-muted); line-height:1.6;">Anda terhubung sebagai keluarga dari <b>${p.name} (${p.familyRole || 'Keluarga'})</b>. Gunakan menu <b>Tanya Perawat</b> di bawah untuk berkomunikasi langsung dengan petugas medis ICCU.</p>
+    </div>`; 
+}
+
+function chatPage(){
+    startChatSync();
+
+    if(role === "family"){
+        if(!familySavedPatient) return `<div class="empty">Silakan masukkan data pasien.</div>`;
+        return `
+        <div class="welcome" style="margin-bottom:18px;"><h2>Chat Perawat</h2><p>Tanya Perawat terkait kondisi <b>${familySavedPatient.name}</b>.</p></div>
+        <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="chat-box" id="chatBox">${renderFamilyChatList()}</div>
+            <div style="padding: 0 24px 24px 24px;">
+                <div id="replyPreviewBar" class="reply-preview-bar">
+                    <div><b id="replyPreviewTitle">Membalas:</b> <span id="replyPreviewText" class="content-preview"></span></div>
+                    <button class="close-reply" onclick="cancelReply()">&times;</button>
+                </div>
+                <div class="reply-input-row">
+                    <input id="newQuestion" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendQuestion()">
+                    <button onclick="sendQuestion()">Kirim</button>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    if(selectedChatMR === null) {
+        return `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <h2 style="margin: 0; color: var(--emerald-deep); font-size: 24px;">Pertanyaan Keluarga</h2>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--text-muted);">Pilih nama pasien untuk melihat dan mengirim pesan.</p>
+            </div>
+            <div style="display: flex; gap: 8px; width: 320px;">
+                <input id="chatSearchInput" placeholder="Cari Kode Unik / Nama Pasien..." value="${esc(chatSearchQuery)}" onkeypress="if(event.key==='Enter') executeChatSearch()" style="padding: 10px 14px; font-size: 13px;">
+                <button onclick="executeChatSearch()" style="padding: 10px 18px; font-size: 13px;">Cari</button>
+            </div>
+        </div>
+        <div class="panel" style="background:transparent; border:none; padding:0; margin-top:10px;" id="chatListPanel">
+            ${renderNurseChatList()}
+        </div>`;
+    }
+
+    let activePt = patientDB.find(pt => pt.mr === selectedChatMR) || {name: "Pasien", mr: selectedChatMR};
+    return `
+    <div class="welcome" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+        <div><h2>Chat: ${activePt.name}</h2><p>Kode Unik / RM: ${activePt.mr}</p></div>
+        <button class="secondary" onclick="selectedChatMR = null; showPage('Tanya Keluarga');" style="font-size:12px; padding:8px 16px;">← Kembali</button>
+    </div>
+    <div class="panel" style="padding:0; overflow:hidden;">
+        <div class="chat-box" id="chatBox" style="height: 380px; margin-bottom:0; border:none; border-radius:0;">
+            ${renderNurseSpecificChat()}
+        </div>
+        <div style="padding: 18px 24px; background:white; border-top:1px solid var(--emerald-border);">
+            <div id="replyPreviewBar" class="reply-preview-bar">
+                <div><b id="replyPreviewTitle">Membalas:</b> <span id="replyPreviewText" class="content-preview"></span></div>
+                <button class="close-reply" onclick="cancelReply()">&times;</button>
+            </div>
+            <div class="reply-input-row">
+                <input id="nurseNewMsg" placeholder="Ketik pesan atau balasan ke keluarga..." onkeypress="if(event.key==='Enter') nurseSendChat('${activePt.mr}')">
+                <button onclick="nurseSendChat('${activePt.mr}')">Kirim</button>
+            </div>
+        </div>
+    </div>`;
+}
+
+function renderFamilyChatList() {
+    let myQs = questions.filter(q => q.mr === familySavedPatient.mr);
+    let chatHtml = myQs.map((q) => {
+        let replyQuoteHTML = q.replyTo ? `<div class="quoted-box"><b>${q.replyTo.sender}</b><br>${esc(q.replyTo.text)}</div>` : '';
+        return `
+        <div class="chat-row row-out">
+            <div class="msg msg-out" ontouchstart="initSwipe(event, '${esc(q.q)}', 'Anda')" onmousedown="initSwipe(event, '${esc(q.q)}', 'Anda')">
+                ${replyQuoteHTML}
+                <div class="msg-text">${esc(q.q)}</div>
+                <div class="msg-time">${q.date}</div>
+            </div>
+        </div>
+        ${q.a ? `
+        <div class="chat-row row-in">
+            <div class="msg msg-in" ontouchstart="initSwipe(event, '${esc(q.a)}', 'Perawat')" onmousedown="initSwipe(event, '${esc(q.a)}', 'Perawat')">
+                <div class="msg-name">Perawat</div>
+                ${replyQuoteHTML}
+                <div class="msg-text">${esc(q.a)}</div>
+                <div class="msg-time">Terkirim</div>
+            </div>
+        </div>` : ''}`;
+    }).join("");
+    return chatHtml || '<div class="empty">Belum ada obrolan.</div>';
+}
+
+function renderNurseChatList() {
+    let query = chatSearchQuery.toLowerCase();
+    let filteredList = patientDB.filter(pt => pt.name.toLowerCase().includes(query) || pt.mr.toLowerCase().includes(query));
+
+    return filteredList.map(pt => {
+        let ptQs = questions.filter(q => q.mr === pt.mr);
+        let unreadCount = ptQs.filter(q => !q.readByNurse).length;
+        return `
+        <div class="chat-list-item">
+            <div style="display: flex; align-items: center; gap: 16px; flex: 1; cursor: pointer;" onclick="selectChat('${pt.mr}')">
+                <div style="width:46px; height:46px; border-radius:50%; background:var(--emerald-light); color:var(--emerald-primary); display:grid; place-items:center; font-size:18px; border:1px solid var(--emerald-border);">♥</div>
+                <div><h4 style="margin:0 0 4px; color:var(--emerald-deep)">${pt.name}</h4><p style="margin:0; font-size:12.5px; color:var(--text-muted);">${ptQs.length} total pesan</p></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                ${unreadCount > 0 ? `<span class="badge-unread">${unreadCount} pesan baru</span>` : `<span style="font-size:12.5px; color:var(--emerald-primary); font-weight:700;">Aktif</span>`}
+                
+                <div style="position: relative; display: inline-block;">
+                    <button class="ghost" style="padding: 8px 12px;" onclick="toggleChatActionMenu(event, '${pt.mr}')">⋮</button>
+                    <div id="chatActionMenu-${pt.mr}" style="display: none; position: absolute; right: 0; top: 110%; background: white; border: 1px solid var(--emerald-border); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; min-width: 130px;">
+                        <button class="ghost" style="width: 100%; text-align: left; padding: 10px 14px; color: var(--danger); border: none; background: transparent;" onclick="deleteChatHistory('${pt.mr}')">Hapus Chat</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join("") || '<div class="empty">Tidak ada pasien atau pesan yang sesuai dengan pencarian.</div>';
+}
+
+function executeChatSearch() {
+    let input = document.getElementById('chatSearchInput');
+    if(input) {
+        chatSearchQuery = input.value.trim();
+        showPage('Tanya Keluarga');
+    }
+}
+
+function renderNurseSpecificChat() {
+    let activeQs = questions.filter(q => q.mr === selectedChatMR);
+    return activeQs.map((q) => {
+        let replyQuoteHTML = q.replyTo ? `<div class="quoted-box"><b>${q.replyTo.sender}</b><br>${esc(q.replyTo.text)}</div>` : '';
+        return `
+        <div class="chat-row row-in">
+            <div class="msg msg-in" ontouchstart="initSwipe(event, '${esc(q.q)}', 'Keluarga')" onmousedown="initSwipe(event, '${esc(q.q)}', 'Keluarga')">
+                <div class="msg-name">Keluarga</div>
+                ${replyQuoteHTML}
+                <div class="msg-text">${esc(q.q)}</div>
+                <div class="msg-time">${q.date}</div>
+            </div>
+        </div>
+        ${q.a ? `
+        <div class="chat-row row-out">
+            <div class="msg msg-out" ontouchstart="initSwipe(event, '${esc(q.a)}', 'Anda')" onmousedown="initSwipe(event, '${esc(q.a)}', 'Anda')">
+                <div class="msg-name">Anda (Perawat)</div>
+                ${replyQuoteHTML}
+                <div class="msg-text">${esc(q.a)}</div>
+                <div class="msg-time">Terkirim</div>
+            </div>
+        </div>` : ''}`;
+    }).join("") || '<div class="empty">Belum ada pesan. Mulai kirim pesan ke keluarga di bawah.</div>';
+}
+
+function initSwipe(e, text, sender) {
+    let elem = e.currentTarget;
+    let startX = e.touches ? e.touches[0].clientX : e.clientX;
+    
+    function onTouchMove(moveEvent) {
+        let currentX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
+        let diff = currentX - startX;
+        if(diff > 0 && diff < 80) {
+            elem.style.transform = `translateX(${diff}px)`;
+        }
+    }
+    
+    function onTouchEnd(endEvent) {
+        let finalX = endEvent.changedTouches ? endEvent.changedTouches[0].clientX : endEvent.clientX;
+        if(finalX - startX > 30) {
+            triggerReply(text, sender);
+        }
+        elem.style.transform = 'translateX(0px)';
+        window.removeEventListener('mousemove', onTouchMove);
+        window.removeEventListener('mouseup', onTouchEnd);
+        window.removeEventListener('touchmove', onTouchMove);
+        window.removeEventListener('touchend', onTouchEnd);
+    }
+    
+    window.addEventListener('mousemove', onTouchMove);
+    window.addEventListener('mouseup', onTouchEnd);
+    window.addEventListener('touchmove', onTouchMove);
+    window.addEventListener('touchend', onTouchEnd);
+}
+
+function triggerReply(text, sender) {
+    replyingTo = { sender: sender, text: text };
+    let bar = document.getElementById('replyPreviewBar');
+    let title = document.getElementById('replyPreviewTitle');
+    let previewText = document.getElementById('replyPreviewText');
+    if(bar && title && previewText) {
+        title.textContent = `Membalas ${sender}:`;
+        previewText.textContent = text;
+        bar.style.display = 'flex';
+    }
+    let inputEl = document.getElementById('newQuestion') || document.getElementById('nurseNewMsg');
+    if(inputEl) inputEl.focus();
+}
+
+function cancelReply() {
+    replyingTo = null;
+    let bar = document.getElementById('replyPreviewBar');
+    if(bar) bar.style.display = 'none';
+}
+
+function sendQuestion(){
+    let q = val("newQuestion").trim();
+    if(!q) return;
+    let timeString = new Date().toLocaleTimeString("id-ID", {hour: '2-digit', minute:'2-digit'});
+    questions.push({
+        q: q, 
+        a: "", 
+        date: timeString, 
+        patientName: familySavedPatient.name, 
+        mr: familySavedPatient.mr,
+        replyTo: replyingTo ? { sender: replyingTo.sender, text: replyingTo.text } : null,
+        readByNurse: false,
+        readByFamily: true
+    });
+    localStorage.setItem('iccu_questions', JSON.stringify(questions)); 
+    lastChatCount = JSON.stringify(questions);
+    document.getElementById('newQuestion').value = "";
+    cancelReply();
+    updateChatBoxUI();
+    scrollToBottom();
+}
+
+function nurseSendChat(mr) {
+    let text = val("nurseNewMsg").trim();
+    if(!text) return;
+    let timeString = new Date().toLocaleTimeString("id-ID", {hour: '2-digit', minute:'2-digit'});
+    let pt = patientDB.find(p => p.mr === mr);
+    
+    questions.push({
+        q: text, 
+        a: text, 
+        date: timeString, 
+        patientName: pt ? pt.name : 'Pasien', 
+        mr: mr,
+        replyTo: replyingTo ? { sender: replyingTo.sender, text: replyingTo.text } : null,
+        readByNurse: true,
+        readByFamily: false
+    });
+    localStorage.setItem('iccu_questions', JSON.stringify(questions));
+    lastChatCount = JSON.stringify(questions);
+    document.getElementById('nurseNewMsg').value = "";
+    cancelReply();
+    updateChatBoxUI();
+    scrollToBottom();
+}
+
+function selectChat(mr) { 
+    selectedChatMR = mr; 
+    questions.forEach(q => { if(q.mr === mr) q.readByNurse = true; });
+    localStorage.setItem('iccu_questions', JSON.stringify(questions));
+    showPage('Tanya Keluarga'); 
+    setTimeout(scrollToBottom, 50);
+}
+
+function scrollToBottom() { 
+    let cb = document.getElementById('chatBox'); 
+    if(cb) cb.scrollTop = cb.scrollHeight; 
+}
+
+function educationPage(){
+    let gridCardsHTML = educationDB.map((edu, idx) => {
+        if(isEditingEducation && role === 'nurse') {
+            let itemsText = edu.items ? edu.items.join('\n') : '';
+            return `
+            <div class="edu-card-grid" style="background: white; border: 2px dashed var(--emerald-primary);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                    <label style="margin:0; font-size:10.5px;">Judul Grid #${idx+1}</label>
+                    <button type="button" class="danger" style="padding: 4px 10px; font-size: 11px;" onclick="deleteEduCard(${edu.id})">Hapus Grid</button>
+                </div>
+                <input style="margin-bottom:10px; font-weight:700;" value="${esc(edu.title)}" placeholder="Judul..." oninput="updateEduField(${edu.id}, 'title', this.value)">
+                
+                <label style="margin:0 0 4px 0; font-size:10.5px;">URL Gambar (Opsional)</label>
+                <input style="margin-bottom:10px; font-size:12px;" value="${esc(edu.image || '')}" placeholder="https://... atau unggah file" oninput="updateEduField(${edu.id}, 'image', this.value)">
+                <input type="file" accept="image/*" style="margin-bottom:10px; font-size:11px; padding:6px;" onchange="handleEduImageUpload(event, ${edu.id})">
+                ${edu.image ? `<div class="edu-img-container"><img src="${esc(edu.image)}"></div>` : ''}
+
+                <label style="margin:0 0 4px 0; font-size:10.5px;">Deskripsi / Paragraf</label>
+                <textarea style="margin-bottom:10px; font-size:12px; height:70px;" placeholder="Isi edukasi..." oninput="updateEduField(${edu.id}, 'content', this.value)">${esc(edu.content || '')}</textarea>
+
+                <label style="margin:0 0 4px 0; font-size:10.5px;">Sub-judul (Opsional)</label>
+                <input style="margin-bottom:10px; font-size:12px;" value="${esc(edu.subtitle || '')}" placeholder="Contoh: Pasal 4..." oninput="updateEduField(${edu.id}, 'subtitle', this.value)">
+
+                <label style="margin:0 0 4px 0; font-size:10.5px;">Daftar Poin (Opsional, pisahkan dengan baris baru / Enter)</label>
+                <textarea style="font-size:12px; height:80px;" placeholder="Poin 1&#10;Poin 2..." oninput="updateEduListField(${edu.id}, this.value)">${esc(itemsText)}</textarea>
+            </div>`;
+        } else {
+            let imageHTML = edu.image ? `<div class="edu-img-container"><img src="${esc(edu.image)}" alt="${esc(edu.title)}"></div>` : '';
+            let contentHTML = edu.content ? `<p>${esc(edu.content)}</p>` : '';
+            let subtitleHTML = edu.subtitle ? `<h4>${esc(edu.subtitle)}</h4>` : '';
+            let listHTML = (edu.items && edu.items.length > 0) ? `<ol>${edu.items.map(it => `<li>${esc(it)}</li>`).join("")}</ol>` : '';
+
+            return `
+            <div class="edu-card-grid">
+                <div>
+                    <h3>${esc(edu.title)}</h3>
+                    ${imageHTML}
+                    ${contentHTML}
+                    ${subtitleHTML}
+                    ${listHTML}
+                </div>
+            </div>`;
+        }
+    }).join("");
+
+    let editControls = role === 'nurse' ? `
+        <div style="display: flex; gap: 8px;">
+            ${isEditingEducation ? `
+                <button class="secondary" onclick="addEduCard()" style="font-size:12.5px; padding:8px 16px;">+ Tambah Grid</button>
+                <button onclick="saveEducationData()" style="font-size:12.5px; padding:8px 16px;">Simpan Perubahan</button>
+            ` : `
+                <button class="secondary" onclick="toggleEditEducation()" style="font-size:12.5px; padding:8px 16px;">✏️ Edit Edukasi</button>
+            `}
+        </div>` : '';
+
+    return `
+    <div class="edu-wrapper">
+        <div class="edu-header-row">
+            <h2>Edukasi Keluarga</h2>
+            ${editControls}
+        </div>
+        <div class="edu-grid-container">
+            ${gridCardsHTML}
+        </div>
+    </div>`;
+}
+
+function toggleEditEducation() {
+    isEditingEducation = !isEditingEducation;
+    showPage('Edukasi');
+}
+
+function updateEduField(id, field, value) {
+    let card = educationDB.find(e => e.id === id);
+    if(card) {
+        card[field] = value;
+    }
+}
+
+function updateEduListField(id, textValue) {
+    let card = educationDB.find(e => e.id === id);
+    if(card) {
+        card.items = textValue.split('\n').filter(line => line.trim() !== '');
+    }
+}
+
+function handleEduImageUpload(event, id) {
+    let file = event.target.files[0];
+    if(file) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let card = educationDB.find(card => card.id === id);
+            if(card) {
+                card.image = e.target.result;
+                showPage('Edukasi');
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function addEduCard() {
+    educationDB.push({
+        id: Date.now(),
+        title: "Judul Baru",
+        content: "Masukkan deskripsi edukasi di sini...",
+        image: "",
+        subtitle: "",
+        items: []
+    });
+    showPage('Edukasi');
+}
+
+function deleteEduCard(id) {
+    if(confirm("Apakah Anda yakin ingin menghapus grid edukasi ini?")) {
+        educationDB = educationDB.filter(e => e.id !== id);
+        showPage('Edukasi');
+    }
+}
+
+function saveEducationData() {
+    localStorage.setItem('iccu_education', JSON.stringify(educationDB));
+    isEditingEducation = false;
+    showPage('Edukasi');
+    alert("Perubahan edukasi berhasil disimpan.");
+}
+
+function createNewPatient(){ 
+    currentPatient = { 
+        id: Date.now(), 
+        name: "", 
+        mr: "", 
+        room: "", 
+        diagnosis: "", 
+        condition: "Stabil",
+        conditionOther: "",
+        nutrisi: [{ket: "", tanggal: "", jam: ""}],
+        hygiene: [{ket: "", tanggal: "", jam: ""}],
+        tindakan: [{ket: "", tanggal: "", jam: ""}],
+        monitoring: [{ket: "", tanggal: "", jam: ""}],
+        aktivitas: [{ket: "", tanggal: "", jam: ""}],
+        catatan: [{ket: "", tanggal: "", jam: ""}]
+    }; 
+    isNewPatient = true; 
+    showPage('Update Pasien'); 
+}
+
+function renderDynamicRows(categoryKey, title, description) {
+    let list = currentPatient[categoryKey] || [{ket: "", tanggal: "", jam: ""}];
+    if(list.length === 0) list = [{ket: "", tanggal: "", jam: ""}];
+    
+    let rowsHTML = list.map((item, idx) => `
+        <div style="background: var(--emerald-light); border: 1px solid var(--emerald-border); border-radius: 16px; padding: 16px; margin-bottom: 14px; position: relative;" id="row-${categoryKey}-${idx}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label style="margin: 0; font-size: 11px;">Keterangan</label>
+                <button type="button" class="danger" style="padding: 4px 10px; font-size: 11px;" onclick="removeDynamicRow('${categoryKey}', ${idx})">Hapus</button>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <input placeholder="Masukkan keterangan..." value="${esc(item.ket)}" oninput="updateItemData('${categoryKey}', ${idx}, 'ket', this.value)">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <label style="margin: 0 0 4px 0; font-size: 11px;">Tanggal</label>
+                    <input type="date" value="${esc(item.tanggal)}" onchange="updateItemData('${categoryKey}', ${idx}, 'tanggal', this.value)">
+                </div>
+                <div>
+                    <label style="margin: 0 0 4px 0; font-size: 11px;">Jam</label>
+                    <input type="time" value="${esc(item.jam || '')}" onchange="updateItemData('${categoryKey}', ${idx}, 'jam', this.value)">
+                </div>
+            </div>
+        </div>
+    `).join("");
+
+    return `
+    <div class="form-card-section">
+        <div class="section-row-action" style="margin-bottom: 16px;">
+            <div class="desc-text">
+                <h3 class="section-title" style="margin-bottom: 4px;">${title}</h3>
+                <p>${description}</p>
+            </div>
+            <button type="button" class="btn-tambah-data" onclick="addDynamicRow('${categoryKey}')">+ Tambah Data</button>
+        </div>
+        <div id="container-${categoryKey}">
+            ${rowsHTML}
+        </div>
+    </div>`;
+}
+
+function addDynamicRow(key) {
+    if(!currentPatient[key]) currentPatient[key] = [];
+    currentPatient[key].push({ket: "", tanggal: "", jam: ""});
+    refreshSection(key);
+}
+
+function removeDynamicRow(key, idx) {
+    if(currentPatient[key].length > 1) {
+        currentPatient[key].splice(idx, 1);
+    } else {
+        currentPatient[key] = [{ket: "", tanggal: "", jam: ""}];
+    }
+    refreshSection(key);
+}
+
+function updateItemData(key, idx, field, val) {
+    if(currentPatient[key] && currentPatient[key][idx]) {
+        currentPatient[key][idx][field] = val;
+    }
+}
+
+function refreshSection(key) {
+    let container = document.getElementById(`container-${key}`);
+    if(!container) return;
+    let list = currentPatient[key];
+    container.innerHTML = list.map((item, idx) => `
+        <div style="background: var(--emerald-light); border: 1px solid var(--emerald-border); border-radius: 16px; padding: 16px; margin-bottom: 14px; position: relative;" id="row-${key}-${idx}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label style="margin: 0; font-size: 11px;">Keterangan</label>
+                <button type="button" class="danger" style="padding: 4px 10px; font-size: 11px;" onclick="removeDynamicRow('${key}', ${idx})">Hapus</button>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <input placeholder="Masukkan keterangan..." value="${esc(item.ket)}" oninput="updateItemData('${key}', ${idx}, 'ket', this.value)">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <label style="margin: 0 0 4px 0; font-size: 11px;">Tanggal</label>
+                    <input type="date" value="${esc(item.tanggal)}" onchange="updateItemData('${key}', ${idx}, 'tanggal', this.value)">
+                </div>
+                <div>
+                    <label style="margin: 0 0 4px 0; font-size: 11px;">Jam</label>
+                    <input type="time" value="${esc(item.jam || '')}" onchange="updateItemData('${key}', ${idx}, 'jam', this.value)">
+                </div>
+            </div>
+        </div>
+    `).join("");
+}
+
+function updateForm(){
+    let p = currentPatient;
+    if(!p.nutrisi) p.nutrisi = [{ket: "", tanggal: "", jam: ""}];
+    if(!p.hygiene) p.hygiene = [{ket: "", tanggal: "", jam: ""}];
+    if(!p.tindakan) p.tindakan = [{ket: "", tanggal: "", jam: ""}];
+    if(!p.monitoring) p.monitoring = [{ket: "", tanggal: "", jam: ""}];
+    if(!p.aktivitas) p.aktivitas = [{ket: "", tanggal: "", jam: ""}];
+    if(!p.catatan) p.catatan = [{ket: "", tanggal: "", jam: ""}];
+
+    let isOther = p.condition === 'Lainnya';
+
+    return `
+    <div class="form-banner-top">
+        <div>
+            <small>Input & Pembaruan Pasien</small>
+            <h2>${isNewPatient ? 'Pasien Baru' : 'Update Pasien'}</h2>
+        </div>
+        <div class="badge-data-baru">DATA BARU</div>
+    </div>
+    
+    <div class="form-card-section">
+        <h3 class="section-title">Identitas Pasien</h3>
+        <div class="form-grid">
+            <div><label>Nama Pasien</label><input id="fName" value="${esc(p.name)}" placeholder="Nama lengkap pasien"></div>
+            <div><label>Kode Unik sebagai Password</label><input id="fMR" value="${esc(p.mr)}" placeholder="Kode unik keluarga"></div>
+            <div><label>No. Bed Pasien</label><input id="fRoom" value="${esc(p.room)}" placeholder="Contoh: Bed 1"></div>
+            <div><label>Tanggal Lahir</label><input id="fDOB" value="${esc(p.dob || '')}" placeholder="dd/mm/yyyy"></div>
+            <div><label>Peran Keluarga</label><input id="fFamilyRole" value="${esc(p.familyRole || '')}" placeholder="Contoh: Istri / Anak / Suami"></div>
+            <div><label>Diagnosis Pasien</label><input id="fDiagnosis" value="${esc(p.diagnosis || '')}" placeholder="Diagnosis medis"></div>
+        </div>
+    </div>
+
+    <div class="form-card-section">
+        <h3 class="section-title">Kondisi Umum</h3>
+        <label>Kondisi Umum</label>
+        <select id="fCondition" onchange="handleConditionChange(this.value)">
+            <option value="Stabil" ${p.condition === 'Stabil' ? 'selected' : ''}>Stabil</option>
+            <option value="Pemantauan" ${p.condition === 'Pemantauan' ? 'selected' : ''}>Pemantauan</option>
+            <option value="Lainnya" ${isOther ? 'selected' : ''}>Lainnya</option>
+        </select>
+        
+        <div id="conditionOtherWrapper" style="margin-top: 12px; display: ${isOther ? 'block' : 'none'};">
+            <label>Keterangan Kondisi Lainnya</label>
+            <input id="fConditionOther" value="${esc(p.conditionOther || '')}" placeholder="Masukkan keterangan kondisi...">
+        </div>
+    </div>
+
+    ${renderDynamicRows('nutrisi', 'Nutrisi', 'Bisa ditambahkan beberapa kali.')}
+    ${renderDynamicRows('hygiene', 'Personal Hygiene', 'Catat setiap tindakan dan waktunya.')}
+    ${renderDynamicRows('tindakan', 'Tindakan Keperawatan', 'Tambahkan tindakan aktual maupun rencana berikutnya.')}
+    ${renderDynamicRows('monitoring', 'Monitoring', 'Buat catatan monitoring baru tanpa menimpa sebelumnya.')}
+    ${renderDynamicRows('aktivitas', 'Aktivitas', 'Bisa dicatat berkali-kali sesuai perkembangan pasien.')}
+    ${renderDynamicRows('catatan', 'Catatan Tambahan', 'Tambahkan catatan baru sesuai kebutuhan.')}
+
+    <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:28px;">
+        <button class="secondary" onclick="showPage('Daftar Pasien')">Batal</button>
+        <button onclick="savePatientDb()">Simpan Pembaharuan</button>
+    </div>`;
+}
+
+function handleConditionChange(val) {
+    let wrap = document.getElementById('conditionOtherWrapper');
+    if(wrap) {
+        wrap.style.display = val === 'Lainnya' ? 'block' : 'none';
+    }
+}
+
+function savePatientDb(){
+    let n = val("fName").trim(); let rm = val("fMR").trim();
+    if(!n || !rm) { alert("Nama dan Kode Unik wajib diisi!"); return; }
+    currentPatient.name = n; 
+    currentPatient.mr = rm; 
+    currentPatient.room = val("fRoom"); 
+    currentPatient.diagnosis = val("fDiagnosis");
+    currentPatient.condition = val("fCondition") || "Stabil";
+    currentPatient.conditionOther = currentPatient.condition === 'Lainnya' ? val("fConditionOther") : "";
+    currentPatient.dob = val("fDOB");
+    currentPatient.familyRole = val("fFamilyRole");
+
+    if(isNewPatient){ patientDB.unshift(currentPatient); isNewPatient = false; } else { let idx = patientDB.findIndex(p => p.id === currentPatient.id); if(idx > -1) patientDB[idx] = currentPatient; }
+    localStorage.setItem('iccu_patients', JSON.stringify(patientDB));
+    showPage("Daftar Pasien");
+}
+
+function patientList(){
+    let query = currentSearchQuery.toLowerCase();
+    let filteredDB = patientDB.filter(p => p.name.toLowerCase().includes(query) || p.mr.toLowerCase().includes(query));
+
+    let trs = filteredDB.map(p => {
+        return `
+        <tr>
+            <td><b>${p.mr}</b></td>
+            <td>${p.name}</td>
+            <td>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn-buka" onclick="openPatient(${p.id})">Buka</button>
+                    
+                    <div style="position: relative; display: inline-block;">
+                        <button class="ghost" style="padding: 8px 14px;" onclick="toggleActionMenu(event, ${p.id})">⋮</button>
+                        <div id="actionMenu-${p.id}" style="display: none; position: absolute; right: 0; top: 110%; background: white; border: 1px solid var(--emerald-border); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; min-width: 120px;">
+                            <button class="ghost" style="width: 100%; text-align: left; padding: 10px 14px; color: var(--danger); border: none; background: transparent;" onclick="deletePatient(${p.id})">Hapus</button>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>`;
+    }).join("");
+
+    let deletedTrs = deletedPatientDB.map(p => {
+        return `
+        <tr>
+            <td><b>${p.mr}</b></td>
+            <td>${p.name}</td>
+            <td>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn-buka" style="padding: 7px 16px; font-size:12px;" onclick="restorePatient(${p.id})">Pulihkan</button>
+                    
+                    <div style="position: relative; display: inline-block;">
+                        <button class="ghost" style="padding: 6px 10px;" onclick="toggleDeletedActionMenu(event, ${p.id})">⋮</button>
+                        <div id="deletedActionMenu-${p.id}" style="display: none; position: absolute; right: 0; top: 110%; background: white; border: 1px solid var(--emerald-border); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; min-width: 140px;">
+                            <button class="ghost" style="width: 100%; text-align: left; padding: 10px 14px; color: var(--danger); border: none; background: transparent; font-size: 12.5px;" onclick="permanentDeletePatient(${p.id})">Delete Permanen</button>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>`;
+    }).join("");
+
+    return `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px;">
+        <h2 style="margin: 0; color: var(--emerald-deep); font-size: 24px;">Kelola Data Pasien</h2>
+        <button class="secondary" onclick="syncPatientList()" style="display: flex; align-items: center; gap: 8px;">
+            <span>🔄</span> Sinkronkan Data
+        </button>
+    </div>
+
+    <div class="panel" style="margin-top:0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+            <h3 style="margin: 0; color: var(--emerald-deep);">Daftar Pasien Aktif</h3>
+            <div style="display: flex; gap: 8px; width: 320px;">
+                <input id="searchInput" placeholder="Cari Kode Unik / Nama Pasien..." value="${esc(currentSearchQuery)}" onkeypress="if(event.key==='Enter') executeSearch()" style="padding: 10px 14px; font-size: 13px;">
+                <button onclick="executeSearch()" style="padding: 10px 18px; font-size: 13px;">Cari</button>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr><th>Kode Unik / RM</th><th>Nama</th><th>Aksi</th></tr>
+            </thead>
+            <tbody>
+                ${filteredDB.length ? trs : '<tr><td colspan="3" class="empty">Tidak ada pasien aktif yang sesuai.</td></tr>'}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel" style="margin-top:24px; border-style: dashed;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+                <h3 style="margin: 0 0 4px 0; color: var(--text-muted); font-size: 16px;">📁 Riwayat Data Pasien yang Dihapus</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Data pasien yang dihapus tersimpan di sini dan dapat dipulihkan kapan saja jika diperlukan.</p>
+            </div>
+            <div style="position: relative; display: inline-block;">
+                <button class="ghost" style="padding: 8px 12px;" onclick="toggleHistoryMenu(event)">⋮</button>
+                <div id="historyActionMenu" style="display: none; position: absolute; right: 0; top: 110%; background: white; border: 1px solid var(--emerald-border); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; min-width: 150px;">
+                    <button class="ghost" style="width: 100%; text-align: left; padding: 10px 14px; color: var(--danger); border: none; background: transparent; font-size: 13px;" onclick="clearAllDeletedHistory()">Hapus Semua Riwayat</button>
+                </div>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr><th>Kode Unik / RM</th><th>Nama</th><th>Aksi Pemulihan</th></tr>
+            </thead>
+            <tbody>
+                ${deletedPatientDB.length ? deletedTrs : '<tr><td colspan="3" class="empty">Belum ada riwayat data terhapus.</td></tr>'}
+            </tbody>
+        </table>
+    </div>`;
+}
+
+function executeSearch() {
+    let input = document.getElementById('searchInput');
+    if(input) {
+        currentSearchQuery = input.value.trim();
+        showPage('Daftar Pasien');
+    }
+}
+
+function syncPatientList() {
+    patientDB = JSON.parse(localStorage.getItem('iccu_patients')) || defaultDB;
+    deletedPatientDB = JSON.parse(localStorage.getItem('iccu_deleted_patients')) || [];
+    currentSearchQuery = "";
+    showPage('Daftar Pasien');
+    alert("Data pasien berhasil disinkronkan.");
+}
+
+function toggleActionMenu(event, id) {
+    event.stopPropagation();
+    document.querySelectorAll('[id^="actionMenu-"]').forEach(el => {
+        if (el.id !== `actionMenu-${id}`) el.style.display = 'none';
+    });
+    document.querySelectorAll('[id^="deletedActionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    document.querySelectorAll('[id^="chatActionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    let hm = document.getElementById('historyActionMenu'); if(hm) hm.style.display = 'none';
+    
+    let menu = document.getElementById(`actionMenu-${id}`);
+    if (menu) {
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+function toggleDeletedActionMenu(event, id) {
+    event.stopPropagation();
+    document.querySelectorAll('[id^="deletedActionMenu-"]').forEach(el => {
+        if (el.id !== `deletedActionMenu-${id}`) el.style.display = 'none';
+    });
+    document.querySelectorAll('[id^="actionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    document.querySelectorAll('[id^="chatActionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    let hm = document.getElementById('historyActionMenu'); if(hm) hm.style.display = 'none';
+
+    let menu = document.getElementById(`deletedActionMenu-${id}`);
+    if (menu) {
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+function toggleHistoryMenu(event) {
+    event.stopPropagation();
+    document.querySelectorAll('[id^="actionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    document.querySelectorAll('[id^="deletedActionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    document.querySelectorAll('[id^="chatActionMenu-"]').forEach(el => { el.style.display = 'none'; });
+
+    let menu = document.getElementById('historyActionMenu');
+    if (menu) {
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+function toggleChatActionMenu(event, mr) {
+    event.stopPropagation();
+    document.querySelectorAll('[id^="chatActionMenu-"]').forEach(el => {
+        if (el.id !== `chatActionMenu-${mr}`) el.style.display = 'none';
+    });
+    document.querySelectorAll('[id^="actionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    document.querySelectorAll('[id^="deletedActionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    let hm = document.getElementById('historyActionMenu'); if(hm) hm.style.display = 'none';
+
+    let menu = document.getElementById(`chatActionMenu-${mr}`);
+    if (menu) {
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+function deleteChatHistory(mr) {
+    if (confirm("Apakah Anda yakin ingin menghapus riwayat chat/notifikasi untuk pasien ini?")) {
+        questions = questions.filter(q => q.mr !== mr);
+        localStorage.setItem('iccu_questions', JSON.stringify(questions));
+        showPage('Tanya Keluarga');
+    }
+}
+
+window.addEventListener('click', () => {
+    document.querySelectorAll('[id^="actionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    document.querySelectorAll('[id^="deletedActionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    document.querySelectorAll('[id^="chatActionMenu-"]').forEach(el => { el.style.display = 'none'; });
+    let hm = document.getElementById('historyActionMenu'); if(hm) hm.style.display = 'none';
+});
+
+function deletePatient(id) {
+    if (confirm("Apakah Anda yakin ingin menghapus data pasien ini? Data akan dipindahkan ke riwayat terhapus.")) {
+        let target = patientDB.find(p => p.id === id);
+        if(target) {
+            patientDB = patientDB.filter(p => p.id !== id);
+            deletedPatientDB.unshift(target);
+            localStorage.setItem('iccu_patients', JSON.stringify(patientDB));
+            localStorage.setItem('iccu_deleted_patients', JSON.stringify(deletedPatientDB));
+            showPage('Daftar Pasien');
+        }
+    }
+}
+
+function restorePatient(id) {
+    let target = deletedPatientDB.find(p => p.id === id);
+    if(target) {
+        deletedPatientDB = deletedPatientDB.filter(p => p.id !== id);
+        patientDB.unshift(target);
+        localStorage.setItem('iccu_patients', JSON.stringify(patientDB));
+        localStorage.setItem('iccu_deleted_patients', JSON.stringify(deletedPatientDB));
+        showPage('Daftar Pasien');
+    }
+}
+
+function permanentDeletePatient(id) {
+    if (confirm("Apakah Anda yakin ingin menghapus data pasien ini secara permanen? Tindakan ini tidak dapat dibatalkan.")) {
+        deletedPatientDB = deletedPatientDB.filter(p => p.id !== id);
+        localStorage.setItem('iccu_deleted_patients', JSON.stringify(deletedPatientDB));
+        showPage('Daftar Pasien');
+    }
+}
+
+function clearAllDeletedHistory() {
+    if (confirm("Apakah Anda yakin ingin menghapus SEMUA riwayat data pasien yang dihapus secara permanen?")) {
+        deletedPatientDB = [];
+        localStorage.setItem('iccu_deleted_patients', JSON.stringify(deletedPatientDB));
+        showPage('Daftar Pasien');
+    }
+}
+
+function openPatient(id){ currentPatient = patientDB.find(p => p.id === id); isNewPatient = false; showPage('Update Pasien'); }
+function val(id){ return document.getElementById(id)?.value||""; }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+document.getElementById('role').addEventListener('change',e=>{
+    const role = e.target.value;
+    if(role === 'nurse') { document.getElementById('passwordLabel').textContent = "Password"; document.getElementById('password').placeholder = "Masukkan password"; } 
+    else { document.getElementById('passwordLabel').textContent = "Kode Unik Pasien"; document.getElementById('password').placeholder = "Masukkan kode unik"; }
+});
+</script>
+</body>
+</html>
